@@ -1,0 +1,50 @@
+<!-- example 404 page -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Error</title>
+</head>
+
+<body>
+    <p id="main"></p>
+    <style>
+        #main {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+    <script>
+        var string = "No thing found with this URL!";
+        function f() {
+            if (string.length == 0) {
+                clearInterval(run);
+                console.log("Over");
+                setTimeout(() => {
+                    document.getElementById("main").innerHTML += `
+                        <br><br>Maybe what you are looking for is
+                        <a href="#" id='x'> here</a> :D
+                    `;
+                    document.getElementById("x").onclick = function () {
+                        window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+                    };
+                }, 1500);
+            }
+            else {
+                document.getElementById("main").innerHTML += string[0];
+                string = string.substring(1);
+            }
+        }
+        var run = setInterval(f, 100);
+
+
+
+    </script>
+</body>
+
+</html>
