@@ -6,27 +6,19 @@ from api.models.user import User
 
 
 class Message(models.Model):
-    type_choices = (
-        ("text", "Văn bản"),
-        ("image", "Hình ảnh"),
-        ("video", "Video"),
-        ("audio", "Âm thanh"),
-        ("file", "Tệp"),
-    )
-
-    type = models.CharField(max_length=10, choices=type_choices)
     text = models.TextField(blank=True, null=True)
-    image = models.ImageField(upload_to="m/images/", blank=True, null=True)
-    video = models.FileField(upload_to="m/videos/", blank=True, null=True)
-    audio = models.FileField(upload_to="m/audios/", blank=True, null=True)
-    file = models.FileField(upload_to="m/files/", blank=True, null=True)
-
-    reply_to = models.ForeignKey("Message", on_delete=models.CASCADE, related_name="replies", null=True, blank=True)
+    reply_to = models.ForeignKey(
+        "Message",
+        on_delete=models.CASCADE,
+        related_name="replies",
+        null=True,
+        blank=True,
+    )
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
     room = models.ForeignKey("Room", on_delete=models.CASCADE, related_name="messages")
     created_at = models.DateTimeField(auto_now_add=True)
     deleted = models.BooleanField(default=False)
-    
+
     class Meta:
         db_table = "messages"
 
@@ -36,16 +28,48 @@ class Message(models.Model):
     def toJSON(self):
         return {
             "id": self.id,
-            "type": self.type,
             "text": self.text,
-            "image": HOST_URL + self.image.url if self.image else None,
-            "video": HOST_URL + self.video.url if self.video else None,
-            "audio": HOST_URL + self.audio.url if self.audio else None,
-            "file": HOST_URL + self.file.url if self.file else None,
+            "files": [file.toJSON() for file in self.files.all()],
+            "reply_to": {
+                "sender": {
+                    "id": self.reply_to.sender.id,
+                    "first_name": self.reply_to.sender.first_name,
+                    "last_name": self.reply_to.sender.last_name,
+                },
+                "text": self.reply_to.text,
+                "files": [file.toJSON() for file in self.reply_to.files.all()],
+            }
+            if self.reply_to
+            else None,
             "reaction": [reaction.toJSON() for reaction in self.reactions.all()],
             "sender": {
-                "name": self.sender.first_name,
-                "avatar": self.sender.avatar.url
+                "id": self.sender.id,
+                "first_name": self.sender.first_name,
+                "last_name": self.sender.last_name,
+                "avatar": self.sender.avatar.url if self.sender.avatar else None,
             },
-            "created_at": self.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+            "created_at": self.created_at,
+        }
+
+
+class FileMessage(models.Model):
+    file = models.FileField(upload_to="m/files/")
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="files")
+
+    class Meta:
+        db_table = "file_messages"
+
+    def __str__(self):
+        return (
+            str(self.id)
+            + " - "
+            + self.message.sender.full_name
+            + " -> "
+            + str(self.message.room.id)
+        )
+
+    def toJSON(self):
+        return {
+            "file": HOST_URL + self.file.url,
+            "message": self.message.toJSON(),
         }

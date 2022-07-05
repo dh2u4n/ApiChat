@@ -48,7 +48,7 @@ def regex_name(name):
     words = name.split()
     name = ""
     for word in words:
-        if not re.match(r"^[a-zA-Z]+$", word):
+        if not re.match(r"^[a-zA-Z0-9áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệóòỏõọôốồổỗộơớờởỡợíìỉĩịúùủũụưứừửữựýỳỷỹỵđ_]+$", word):
             raise NameInvalid
         name += word.capitalize() + " "
     return name[:-1]

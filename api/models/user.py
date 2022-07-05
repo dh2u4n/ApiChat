@@ -13,7 +13,7 @@ class User(models.Model):
     password = models.CharField(max_length=100)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    avatar = models.ImageField(upload_to="u/avatars/", default="u/avatars/default.png")
+    avatar = models.ImageField(upload_to="u/avatars/", null=True, blank=True)
     joined_at = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now=True)
     is_admin = models.BooleanField(default=False)
@@ -33,7 +33,7 @@ class User(models.Model):
             "phone": self.phone,
             "first_name": self.first_name,
             "last_name": self.last_name,
-            "avatar": HOST_URL + self.avatar.url,
+            "avatar": HOST_URL + self.avatar.url if self.avatar else None,
             "joined_at": self.joined_at,
             "last_login": self.last_login,
             "is_active": self.is_active,

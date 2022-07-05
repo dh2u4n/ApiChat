@@ -14,7 +14,8 @@ class Couple(Room):
     nickname1 = models.CharField(max_length=50, blank=True, null=True)
     nickname2 = models.CharField(max_length=50, blank=True, null=True)
 
-    is_pending = models.BooleanField(default=True)
+    user1_accepted = models.BooleanField(default=False)
+    user2_accepted = models.BooleanField(default=False)
 
     class Meta:
         db_table = "couples"
@@ -31,3 +32,21 @@ class Couple(Room):
             "nickname2": self.nickname2,
             "last_message": self.last_message.toJSON() if self.last_message else None,
         }
+
+    def checkAccept(self, user):
+        if user == self.user1:
+            return not self.user1_accepted
+        elif user == self.user2:
+            return not self.user2_accepted
+        else:
+            return False
+
+    def accept(self, user):
+        if user == self.user1:
+            self.user1_accepted = True
+        elif user == self.user2:
+            self.user2_accepted = True
+        else:
+            return False
+        self.save()
+        return True

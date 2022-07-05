@@ -7,6 +7,7 @@ from api.controllers import groupController
 
 urlpatterns = [
     path("docs", views.docs),
+    path("test", views.test),
 
     path("register", userController.register),
     path("login", userController.login),
@@ -16,7 +17,9 @@ urlpatterns = [
     path("search_user", userController.search_user),
 
     path("get_recent_messages", msgController.get_recent_messages),
-    path("add_new_message", msgController.add_new_message),
+    path("get_pending_messages", msgController.get_pending_messages),
+    path("get_messages", msgController.get_messages),
+    path("send_message", msgController.send_message),
     path("react_to_message", msgController.react_to_message),
 
     path("create_group", groupController.create_group),

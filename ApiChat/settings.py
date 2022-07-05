@@ -24,11 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-^82e_32j*%99s4^$r26j86ey2zlxcug4ehdvz2ouufys3po02l"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-HOST_URL = "http://dhqit.ddns.net"
+HOST_URL = ""
 
-ALLOWED_HOSTS = ['dhqit.ddns.net', 'localhost']
+ALLOWED_HOSTS = ["dhqit.ddns.net", "localhost"]
 
 
 # Application definition
@@ -104,7 +104,18 @@ DATABASES = {
         "PASSWORD": "admin",
         "HOST": "localhost",
         "PORT": "3306",
-    }
+    },
+    # "default": {
+    #     "ENGINE": "django.db.backends.mysql",
+    #     "OPTIONS": {
+    #         "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
+    #     },
+    #     "NAME": "apichat$default",
+    #     "USER": "apichat",
+    #     "PASSWORD": "admin123@",
+    #     "HOST": "apichat.mysql.pythonanywhere-services.com",
+    #     "PORT": "3306",
+    # },
 }
 
 
@@ -148,11 +159,8 @@ USE_TZ = False
 
 STATIC_URL = "static/"
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
-
-
-        
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

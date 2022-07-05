@@ -79,6 +79,11 @@ def register(request):
             last_name=last_name,
         )
 
+        while user.id % 2 == 1:
+            User.objects.get(id=user.id).delete()
+            user.id += 1
+            user.save()
+
         token = jwt.encode(
             {
                 "uid": user.id,
@@ -158,8 +163,8 @@ def login(request):
                     user = User.objects.get(phone=username)
                 except User.DoesNotExist:
                     try:
-                        user = User.objects.get(id=username)
-                    except User.DoesNotExist:
+                        user = User.objects.get(id=int(username))
+                    except:
                         return JsonResponse(
                             {
                                 "success": False,
@@ -223,28 +228,9 @@ def get_profile(request):
     if request.method == "GET":
         try:
             token = request.headers["Authorization"].split(" ")[1]
-        except KeyError:
-            return JsonResponse(
-                {
-                    "success": False,
-                    "message": "Missing required fields",
-                    "error": "400",
-                },
-                status=400,
-            )
-        try:
             uid = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["uid"]
-
-        except jwt.ExpiredSignatureError:
-            return JsonResponse(
-                {
-                    "success": False,
-                    "message": "Token expired",
-                    "error": "401",
-                },
-                status=401,
-            )
-        except jwt.InvalidTokenError:
+            user = User.objects.get(id=uid)
+        except:
             return JsonResponse(
                 {
                     "success": False,
@@ -253,7 +239,6 @@ def get_profile(request):
                 },
                 status=401,
             )
-        user = User.objects.get(id=uid)
         return JsonResponse(
             {
                 "success": True,
@@ -370,11 +355,11 @@ def set_avatar(request):
 
         if avatar.content_type not in ["image/jpeg", "image/jpg", "image/png"]:
             return JsonResponse(
-                {"success": False, "message": "Invalid avatar", "error": "400"},
+                {"success": False, "message": "File type just jpeg, jpg, png", "error": "400"},
                 status=400,
             )
 
-        if avatar.size > 1000000:
+        if avatar.size > 3000000: # 3MB
             return JsonResponse(
                 {"success": False, "message": "Avatar too large", "error": "400"},
                 status=400,

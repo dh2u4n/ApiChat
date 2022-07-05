@@ -12,7 +12,7 @@ class Group(Room):
         "User", on_delete=models.CASCADE, related_name="owned_groups"
     )
     members_can_change_info = models.BooleanField(default=False)
-    avatar = models.ImageField(upload_to="g/avatars/", default="g/avatars/default.png")
+    avatar = models.ImageField(upload_to="g/avatars/", null=True, blank=True)
 
     deleted = models.BooleanField(default=False)
 

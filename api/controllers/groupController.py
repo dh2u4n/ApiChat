@@ -49,6 +49,12 @@ def create_group(request):
                 owner=user,
                 members_can_change_info=members_can_change_info,
             )
+
+            while group.id % 2 == 0:
+                group.delete()
+                group.id += 1
+                group.save()
+
             group.members.add(user)
             if "avatar" in request.FILES:
                 avatar = request.FILES["avatar"]

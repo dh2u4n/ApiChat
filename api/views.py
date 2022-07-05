@@ -1,28 +1,11 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
-# Create your views here.
+from ApiChat.settings import HOST_URL
 
 
 def test(request):
-    import json
-
-    if request.method == "POST":
-        print("POST")
-        print(request.body)
-        print("!@###############")
-        print(request.POST)
-        return JsonResponse(
-            {
-                "success": True,
-                "message": "Test successful",
-                "error": None,
-            }
-        )
-    return JsonResponse(
-        {"success": False, "message": "Test POST method required", "error": "400"},
-        status=400,
-    )
+    return JsonResponse({"test": "test", "len": len(request.FILES)})
 
 
 def docs(request):
@@ -30,7 +13,7 @@ def docs(request):
         {
             "đăng ký": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/register",
+                "url": HOST_URL + "/api/register",
                 "payload": {
                     "username": "bắt buộc",
                     "email": "bắt buộc",
@@ -42,7 +25,7 @@ def docs(request):
             },
             "đăng nhập": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/login",
+                "url": HOST_URL + "/api/login",
                 "payload": {
                     "username": "username hoặc phone hoặc email hoặc id",
                     "password": "bắt buộc",
@@ -50,12 +33,12 @@ def docs(request):
             },
             "lấy thông tin user": {
                 "method": "GET",
-                "url": "http://dhqit.ddns.net/api/get_profile",
+                "url": HOST_URL + "/api/get_profile",
                 "token": "Bearer <token>",
             },
             "sửa thông tin user": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/edit_profile",
+                "url": HOST_URL + "/api/edit_profile",
                 "token": "Bearer <token>",
                 "payload": {
                     "password": "bắt buộc",
@@ -69,39 +52,29 @@ def docs(request):
             },
             "cài avatar": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/set_avatar",
+                "url": HOST_URL + "/api/set_avatar",
                 "token": "Bearer <token>",
                 "formdata": {"avatar": "1 file ảnh đuôi jpeg/jpg/png"},
             },
             "cuộc hội thoại gần đây": {
                 "method": "GET",
-                "url": "http://dhqit.ddns.net/api/get_recent_messages",
+                "url": HOST_URL + "/api/get_recent_messages",
                 "token": "Bearer <token>",
             },
             "gửi tin nhắn": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/add_new_message",
+                "url": HOST_URL + "/api/send_message",
                 "token": "Bearer <token>",
                 "formdata": {
                     "room_id": "id của cuộc hội thoại hoặc id của người dùng",
-                    "type": [
-                        "text",
-                        "image",
-                        "video",
-                        "audio",
-                        "file",
-                    ],
                     "reply_to": "id của tin nhắn để trả lời(nếu có)",
-                    "text": "nội dung tin nhắn nếu type = text",
-                    "image": "1 file ảnh đuôi jpeg/jpg/png nếu type = image",
-                    "video": "1 file video đuôi mp4/mov nếu type = video",
-                    "audio": "1 file audio đuôi mp3/wav nếu type = audio",
-                    "file": "1 file nếu type = file",
+                    "text": "nếu có",
+                    "file{i}": "nếu có(i bắt đầu từ 1)",
                 },
             },
             "tạo group": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/create_group",
+                "url": HOST_URL + "/api/create_group",
                 "token": "Bearer <token>",
                 "formdata": {
                     "name": "tên group",
@@ -111,7 +84,7 @@ def docs(request):
             },
             "thêm người dùng vào group": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/add_user_to_group",
+                "url": HOST_URL + "/api/add_user_to_group",
                 "token": "Bearer <token>",
                 "payload": {
                     "group_id": "id của group",
@@ -120,7 +93,7 @@ def docs(request):
             },
             "chỉnh sửa group": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/group_settings",
+                "url": HOST_URL + "/api/group_settings",
                 "token": "Bearer <token>",
                 "formdata": {
                     "members_can_change_info": "0 hoặc 1(nếu có)",
@@ -130,7 +103,7 @@ def docs(request):
             },
             "xóa người dùng khỏi group": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/remove_user_from_group",
+                "url": HOST_URL + "/api/remove_user_from_group",
                 "token": "Bearer <token>",
                 "payload": {
                     "group_id": "id của group",
@@ -139,18 +112,18 @@ def docs(request):
             },
             "xóa group": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/delete_group",
+                "url": HOST_URL + "/api/delete_group",
                 "token": "Bearer <token>",
                 "payload": {"group_id": "id của group"},
             },
             "tìm kiếm người dùng": {
                 "method": "GET",
-                "url": "http://dhqit.ddns.net/api/search_user",
+                "url": HOST_URL + "/api/search_user",
                 "param": "q",
             },
             "thả biểu tượng cảm xúc vào tin nhắn": {
                 "method": "POST",
-                "url": "http://dhqit.ddns.net/api/react_to_message",
+                "url": HOST_URL + "/api/react_to_message",
                 "token": "Bearer <token>",
                 "payload": {
                     "message_id": "id của tin nhắn",
@@ -165,6 +138,17 @@ def docs(request):
                     ],
                 },
                 "lưu ý": "reaction = null thì gỡ biểu tượng cảm xúc đã thả",
+            },
+            "lấy danh sách tin nhắn của 1 room": {
+                "method": "GET",
+                "url": HOST_URL + "/api/get_messages",
+                "token": "Bearer <token>",
+                "param": "room_id, page",
+            },
+            "danh sách tin nhắn đang chờ": {
+                "method": "GET",
+                "url": HOST_URL + "/api/get_pending_messages",
+                "token": "Bearer <token>",
             },
         }
     )
