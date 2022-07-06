@@ -1,7 +1,10 @@
 from django.db import models
 
-import hashlib
 from ApiChat.settings import HOST_URL
+
+import hashlib
+import random
+
 
 # Create your models here.
 
@@ -18,6 +21,8 @@ class User(models.Model):
     last_login = models.DateTimeField(auto_now=True)
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
+
+    otp_code = models.CharField(max_length=10, blank=True, null=True)
 
     class Meta:
         db_table = "users"
@@ -45,3 +50,8 @@ class User(models.Model):
     @property
     def full_name(self):
         return self.last_name + " " + self.first_name
+
+    def get_otp_code(self):
+        self.otp_code = "".join([str(random.randint(0, 9)) for _ in range(8)])
+        self.save()
+        return self.otp_code

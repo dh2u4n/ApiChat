@@ -2,7 +2,7 @@ import re
 
 
 class UsernameInvalid(Exception):
-    message = "Username just contains letters, numbers and underscores."
+    message = "Username just contains letters, numbers and underscores. It must be at least 3 characters long."
     pass
 
 
@@ -27,7 +27,9 @@ class PasswordInvalid(Exception):
 
 
 def regex_username(username):
-    if re.match(r"^[a-zA-Z0-9_]+$", username):
+    # min 5 characters
+    if re.match(r"^[a-zA-Z0-9_]{3,}$", username):
+        return username
         return username
     raise UsernameInvalid
 
@@ -39,7 +41,7 @@ def regex_email(email):
 
 
 def regex_phone(phone_number):
-    if re.match(r"^[0-9]+$", phone_number):
+    if re.match(r"^0\d{9}$", phone_number):
         return phone_number
     raise PhoneInvalid
 

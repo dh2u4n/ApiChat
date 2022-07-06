@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "api",
+    "chat",
     "corsheaders",  # pip install django-cors-headers
+    "channels",  # pip install channels_redis
 ]
 
 MIDDLEWARE = [
@@ -87,6 +89,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "ApiChat.wsgi.application"
+ASGI_APPLICATION = "ApiChat.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 
 # Database

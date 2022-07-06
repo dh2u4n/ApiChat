@@ -205,7 +205,7 @@ def send_message(request):
                 )
             for i in range(1, num_of_files + 1):
                 file = FILES[f"file{i}"]
-                file.name = f"{user.id}_{room_id}_{i}.{file.name.split('.')[-1]}"
+                file.name = f"{user.id}_{room_id}.{file.name.split('.')[-1].lower()}"
                 msg.files.create(file=file)
             msg.save()
 
@@ -469,30 +469,17 @@ def get_pending_messages(request):
 
         res = []
 
-        for item in Couple.objects.filter(user1=user):
-            if item.last_message and item.is_pending:
+        for couple in Couple.objects.filter(user2=user):
+            if couple.last_message and not couple.user2_accepted:
                 res.append(
                     {
-                        "room_id": item.id,
+                        "room_id": couple.id,
                         "room_type": "couple",
-                        "name": item.nickname2 or item.user2.full_name,
-                        "avatar": HOST_URL + item.user2.avatar.url
-                        if item.user2.avatar
+                        "name": couple.nickname1 or couple.user1.full_name,
+                        "avatar": HOST_URL + couple.user1.avatar.url
+                        if couple.user1.avatar
                         else None,
-                        "last_message": item.last_message.toJSON(),
-                    }
-                )
-        for item in Couple.objects.filter(user2=user):
-            if item.last_message and item.is_pending:
-                res.append(
-                    {
-                        "room_id": item.id,
-                        "room_type": "couple",
-                        "name": item.nickname1 or item.user1.full_name,
-                        "avatar": HOST_URL + item.user1.avatar.url
-                        if item.user1.avatar
-                        else None,
-                        "last_message": item.last_message.toJSON(),
+                        "last_message": couple.last_message.toJSON(),
                     }
                 )
 

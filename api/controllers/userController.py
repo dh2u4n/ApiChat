@@ -12,6 +12,8 @@ import jwt  # pip install PyJWT
 import hashlib
 import json
 import datetime
+import threading
+from mailer import Mailer
 
 
 def register(request):
@@ -355,11 +357,15 @@ def set_avatar(request):
 
         if avatar.content_type not in ["image/jpeg", "image/jpg", "image/png"]:
             return JsonResponse(
-                {"success": False, "message": "File type just jpeg, jpg, png", "error": "400"},
+                {
+                    "success": False,
+                    "message": "File type just jpeg, jpg, png",
+                    "error": "400",
+                },
                 status=400,
             )
 
-        if avatar.size > 3000000: # 3MB
+        if avatar.size > 3000000:  # 3MB
             return JsonResponse(
                 {"success": False, "message": "Avatar too large", "error": "400"},
                 status=400,
@@ -447,3 +453,88 @@ def search_user(request):
             },
             status=400,
         )
+
+
+def reset_password(request):
+    if request.method == "POST":
+        try:
+            DATA = json.loads(request.body)
+            email = DATA["email"]
+            if "otp_code" in DATA and "password" in DATA:
+                otp_code = DATA["otp_code"]
+                new_password = DATA["password"]
+                try:
+                    new_password = regex_password(new_password)
+                except:
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "message": "Password must be at least 6 characters long and just contains letters, numbers and one of the following symbols: !@#$%^&*()_+",
+                            "error": "400",
+                        },
+                        status=400,
+                    )
+                new_password = hashlib.sha256(new_password.encode("utf-8")).hexdigest()
+                user = User.objects.get(email=email)
+                if user.otp_code == otp_code:
+                    user.password = new_password
+                    user.save()
+                    return JsonResponse(
+                        {
+                            "success": True,
+                            "message": "Successfully changed password",
+                        },
+                        status=200,
+                    )
+                else:
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "message": "Invalid OTP code",
+                            "error": "400",
+                        },
+                        status=400,
+                    )
+            else:
+                pass
+        except:
+            return JsonResponse(
+                {"status": "error", "message": "Data is not valid"}, status=400
+            )
+        try:
+            otp_code = User.objects.get(email=email).get_otp_code()
+        except User.DoesNotExist:
+            return JsonResponse(
+                {"error": "Email does not match with any account"}, status=400
+            )
+        threading.Thread(target=send_email, args=(email, otp_code)).start()
+        return JsonResponse(
+            {"status": "success", "message": f"OTP code has been sent to {email}"},
+            status=200,
+        )
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+
+
+def send_email(receiver, otp_code):
+    sender = "dh2u4n@gmail.com"
+    password = "rdyfsxbeaqilrotj"
+    sender_name = "SoKu"
+    subject = "OTP code for reset password"
+    message = f"""\
+    <html>
+        <head></head>
+        <body style="font-size: 16px">
+            <p>Your OTP code is: <b>{otp_code}</b>.</p>
+            <p>Please use this code to reset your password.</p>
+            <br>
+            <p style="font-size: 13px"><i>If you did not request this, please ignore this email. Thank you :)</i></p>
+        </body>
+    </html>
+    """
+
+    mail = Mailer(email=sender, password=password)
+    mail.settings(provider=mail.GMAIL)
+    mail.send(
+        sender_name=sender_name, receiver=receiver, subject=subject, message=message
+    )
+    pass

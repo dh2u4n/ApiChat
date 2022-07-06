@@ -29,7 +29,7 @@ class Message(models.Model):
         return {
             "id": self.id,
             "text": self.text,
-            "files": [file.toJSON() for file in self.files.all()],
+            "files": [file.file.url for file in self.files.all()],
             "reply_to": {
                 "sender": {
                     "id": self.reply_to.sender.id,
@@ -37,7 +37,7 @@ class Message(models.Model):
                     "last_name": self.reply_to.sender.last_name,
                 },
                 "text": self.reply_to.text,
-                "files": [file.toJSON() for file in self.reply_to.files.all()],
+                "files": [file.file.url for file in self.reply_to.files.all()],
             }
             if self.reply_to
             else None,
@@ -71,5 +71,4 @@ class FileMessage(models.Model):
     def toJSON(self):
         return {
             "file": HOST_URL + self.file.url,
-            "message": self.message.toJSON(),
         }

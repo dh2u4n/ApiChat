@@ -15,6 +15,7 @@ urlpatterns = [
     path("edit_profile", userController.edit_profile),
     path("set_avatar", userController.set_avatar),
     path("search_user", userController.search_user),
+    path("reset_pw", userController.reset_password),
 
     path("get_recent_messages", msgController.get_recent_messages),
     path("get_pending_messages", msgController.get_pending_messages),

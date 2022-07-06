@@ -150,5 +150,15 @@ def docs(request):
                 "url": HOST_URL + "/api/get_pending_messages",
                 "token": "Bearer <token>",
             },
+            "lấy lại mật khẩu": {
+                "method": "POST",
+                "url": HOST_URL + "/api/reset_pw",
+                "payload": {
+                    "email": "email của người dùng",
+                    "otp_code": "mã xác nhận",
+                    "new_password": "mật khẩu mới",
+                },
+                "ghi chú": "để mỗi email server gửi otp về, sau đấy thêm otp với mật khẩu mới",
+            },
         }
     )
