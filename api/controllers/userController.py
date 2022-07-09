@@ -476,7 +476,7 @@ def reset_password(request):
                     )
                 new_password = hashlib.sha256(new_password.encode("utf-8")).hexdigest()
                 user = User.objects.get(email=email)
-                if user.otp_code == otp_code:
+                if user.check_otp_code(otp_code):
                     user.password = new_password
                     user.save()
                     return JsonResponse(

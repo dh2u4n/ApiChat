@@ -22,7 +22,7 @@ class User(models.Model):
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
-    otp_code = models.CharField(max_length=10, blank=True, null=True)
+    otp_code = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         db_table = "users"
@@ -52,6 +52,10 @@ class User(models.Model):
         return self.last_name + " " + self.first_name
 
     def get_otp_code(self):
-        self.otp_code = "".join([str(random.randint(0, 9)) for _ in range(8)])
+        otp_code = "".join([str(random.randint(0, 9)) for _ in range(8)])
+        self.otp_code = hashlib.sha256(otp_code.encode("utf-8")).hexdigest()
         self.save()
-        return self.otp_code
+        return otp_code
+
+    def check_otp_code(self, otp_code):
+        return self.otp_code == hashlib.sha256(otp_code.encode("utf-8")).hexdigest()

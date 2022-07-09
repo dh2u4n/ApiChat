@@ -5,7 +5,7 @@ from ApiChat.settings import HOST_URL
 
 
 def test(request):
-    return JsonResponse({"test": "test", "len": len(request.FILES)})
+    return JsonResponse({"test": "test", "text": request.POST.get("text")})
 
 
 def docs(request):
@@ -78,7 +78,7 @@ def docs(request):
                 "token": "Bearer <token>",
                 "formdata": {
                     "name": "tên group",
-                    "members_can_change_info": "0 hoặc 1",
+                    "members_can_change_info": "0 hoặc 1(không có thì mặc định là 0)",
                     "avatar": "1 file ảnh đuôi jpeg/jpg/png(nếu có)",
                 },
             },
@@ -119,6 +119,7 @@ def docs(request):
             "tìm kiếm người dùng": {
                 "method": "GET",
                 "url": HOST_URL + "/api/search_user",
+                "token": "Bearer <token>",
                 "param": "q",
             },
             "thả biểu tượng cảm xúc vào tin nhắn": {

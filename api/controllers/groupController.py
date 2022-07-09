@@ -32,7 +32,11 @@ def create_group(request):
         try:
             DATA = request.POST
             name = DATA["name"]
-            members_can_change_info = DATA["members_can_change_info"] == 1
+            members_can_change_info = (
+                DATA["members_can_change_info"] == 1
+                if "members_can_change_info" in DATA
+                else False
+            )
         except:
             return JsonResponse(
                 {
@@ -55,13 +59,28 @@ def create_group(request):
                 group.id += 1
                 group.save()
 
-            group.members.add(user)
             if "avatar" in request.FILES:
                 avatar = request.FILES["avatar"]
-                print(avatar)
-                print(avatar.name)
+                if avatar.content_type not in ["image/jpeg", "image/jpg", "image/png"]:
+                    group.delete()
+                    return JsonResponse(
+                        {
+                            "success": False,
+                            "message": "Avatar must be a jpeg, jpg or png",
+                            "error": 400,
+                        },
+                        status=400,
+                    )
                 avatar.name = "g_" + str(group.id) + "." + avatar.name.split(".")[-1]
                 group.avatar = avatar
+
+            group.members.add(user)
+            Message.objects.create(
+                sender=user,
+                text="Welcome to the group!",
+                room=group,
+            )
+
             group.save()
         except:
             return JsonResponse(

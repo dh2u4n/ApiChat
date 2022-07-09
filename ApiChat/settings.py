@@ -110,6 +110,10 @@ DATABASES = {
     # }
     "default": {
         "ENGINE": "django.db.backends.mysql",
+        "OPTIONS": {
+            "charset": "utf8mb4",
+            "use_unicode": True,
+        },
         "NAME": "apichat",
         "USER": "root",
         "PASSWORD": "admin",

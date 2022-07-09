@@ -187,13 +187,6 @@ def send_message(request):
             text = DATA["text"] if "text" in DATA else None
             num_of_files = len(FILES)
 
-            msg = Message.objects.create(
-                sender=user,
-                room=Room.objects.get(id=room_id),
-                text=text,
-                reply_to=reply_to,
-            )
-
             if not text and not num_of_files:
                 return JsonResponse(
                     {
@@ -203,6 +196,13 @@ def send_message(request):
                     },
                     status=400,
                 )
+
+            msg = Message.objects.create(
+                sender=user,
+                room=Room.objects.get(id=room_id),
+                text=text,
+                reply_to=reply_to,
+            )
             for i in range(1, num_of_files + 1):
                 file = FILES[f"file{i}"]
                 file.name = f"{user.id}_{room_id}.{file.name.split('.')[-1].lower()}"
@@ -217,11 +217,12 @@ def send_message(request):
             return JsonResponse(
                 {"success": True, "message": msg.toJSON()},
             )
-        except:
+        except Exception as e:
             try:
                 new_couple.delete()
             except:
                 pass
+            print(e)
             return JsonResponse(
                 {
                     "success": False,
@@ -413,7 +414,7 @@ def get_messages(request):
                 )
         except:
             group = Group.objects.get(id=room_id)
-            if user not in group.members:
+            if user not in group.members.all():
                 return JsonResponse(
                     {
                         "success": False,
