@@ -378,3 +378,52 @@ def delete_group(request):
             },
             status=405,
         )
+
+
+def group_info(request):
+    if request.method == "GET":
+        try:
+            token = request.headers.get("Authorization").split(" ")[1]
+            uid = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["uid"]
+            user = User.objects.get(id=uid)
+        except:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Invalid token",
+                    "error": 401,
+                },
+                status=401,
+            )
+
+        try:
+            DATA = request.GET
+            group = user.groups.get(id=DATA["group_id"])
+        except:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "Invalid data",
+                    "error": 400,
+                },
+                status=400,
+            )
+
+        return JsonResponse(
+            {
+                "success": True,
+                "message": "Group info",
+                "group": group.toJSON(),
+            },
+            status=200,
+        )
+
+    else:
+        return JsonResponse(
+            {
+                "success": False,
+                "message": "Invalid method",
+                "error": 405,
+            },
+            status=405,
+        )

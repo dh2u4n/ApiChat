@@ -7,6 +7,7 @@ class Room(models.Model):
     
     class Meta:
         db_table = "rooms"
+        
 
     # last_message
     @property

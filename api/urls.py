@@ -24,6 +24,7 @@ urlpatterns = [
     path("react_to_message", msgController.react_to_message),
 
     path("create_group", groupController.create_group),
+    path("group_info", groupController.group_info),
     path("add_user_to_group", groupController.add_user_to_group),
     path("group_settings", groupController.group_settings),
     path("remove_user_from_group", groupController.remove_user_from_group),

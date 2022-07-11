@@ -161,5 +161,11 @@ def docs(request):
                 },
                 "ghi chú": "để mỗi email server gửi otp về, sau đấy thêm otp với mật khẩu mới",
             },
+            "lấy thông tin group": {
+                "method": "GET",
+                "url": HOST_URL + "/api/group_info",
+                "token": "Bearer <token>",
+                "param": "group_id",
+            },
         }
     )
