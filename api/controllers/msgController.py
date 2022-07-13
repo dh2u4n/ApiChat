@@ -214,6 +214,8 @@ def send_message(request):
             except:
                 pass
 
+            drop_message(msg)
+
             return JsonResponse(
                 {"success": True, "message": msg.toJSON()},
             )
@@ -504,3 +506,7 @@ def get_pending_messages(request):
             },
             status=405,
         )
+
+
+def drop_message(msg):
+    pass

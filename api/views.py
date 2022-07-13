@@ -4,7 +4,12 @@ from django.http import JsonResponse
 from ApiChat.settings import HOST_URL
 
 
-def test(request):
+async def test(request):
+    from ws.consumers import NotificationConsumer
+
+    noti = NotificationConsumer()
+    await noti.system_connect()
+
     return JsonResponse({"test": "test", "text": request.POST.get("text")})
 
 

@@ -1,0 +1,1 @@
+var ws = new WebSocket("ws://dhqit.ddns.net/ws/notification/" + localStorage.getItem('token') + "/");

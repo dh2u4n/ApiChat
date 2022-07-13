@@ -48,6 +48,7 @@ class Message(models.Model):
                 "last_name": self.sender.last_name,
                 "avatar": self.sender.avatar.url if self.sender.avatar else None,
             },
+            "room": self.room.id,
             "created_at": self.created_at,
         }
 

@@ -28,7 +28,7 @@ DEBUG = True
 
 HOST_URL = ""
 
-ALLOWED_HOSTS = ["dhqit.ddns.net", "localhost"]
+ALLOWED_HOSTS = ["dhqit.ddns.net", "localhost", "192.168.1.50"]
 
 
 # Application definition
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "api",
-    "chat",
+    "ws",
     "corsheaders",  # pip install django-cors-headers
     "channels",  # pip install channels_redis
 ]

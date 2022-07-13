@@ -10,13 +10,13 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ApiChat.settings")
 
 django_asgi_app = get_asgi_application()
 
-import chat.routing
+import ws.routing
 
 application = ProtocolTypeRouter(
     {
         "http": django_asgi_app,
         "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(URLRouter(chat.routing.websocket_urlpatterns))
+            AuthMiddlewareStack(URLRouter(ws.routing.websocket_urlpatterns))
         ),
     }
 )
