@@ -1,7 +1,10 @@
 # chat/consumers.py
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.db import database_sync_to_async
 
 from api.models.user import User
+from api.models.group import Group
+from api.models.couple import Couple
 from ApiChat.settings import SECRET_KEY
 
 import json
@@ -28,39 +31,27 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.uid, self.channel_name)
-        await self.channel_layer.group_discard(self.room_id, self.channel_name)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
 
-        if text_data_json["type"] == "join_room":
-            await self.join_room(text_data_json["room_id"])
-
-        elif text_data_json["type"] == "send_message":
-            print(text_data_json)
+        if "add_member" in text_data_json:
+            room_id = text_data_json["add_member"]["room_id"]
+            user_id = text_data_json["add_member"]["user_id"]
             await self.channel_layer.group_send(
-                self.room_id,
-                {"type": "send_message", "message": text_data_json["message"]},
+                str(user_id), {"type": "add_member", "room_id": room_id}
             )
         else:
-            print("Unknown event type")
-            await self.channel_layer.group_send(
-                "1758374927612", {"type": "notification_message", "message": "Hello"}
-            )
+            message = text_data_json["message"]
+            recipients = text_data_json["recipients"]
+
+            for recipient in recipients:
+                await self.channel_layer.group_send(
+                    str(recipient), {"type": "notification_message", "message": message}
+                )
 
     async def notification_message(self, event):
-        await self.send(
-            text_data=json.dumps(
-                {"type": "notification_message", "message": event["message"]}
-            )
-        )
+        await self.send(text_data=json.dumps(event["message"]))
 
-    async def send_message(self, event):
-        await self.send(
-            text_data=json.dumps({"type": "send_message", "message": event["message"]})
-        )
-
-    async def join_room(self, room_id):
-        await self.channel_layer.group_discard(self.uid, self.channel_name)
-        self.room_id = room_id
-        await self.channel_layer.group_add(self.room_id, self.channel_name)
+    async def add_member(self, event):
+        await self.send(text_data=json.dumps(event))

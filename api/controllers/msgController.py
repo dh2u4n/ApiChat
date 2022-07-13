@@ -214,10 +214,13 @@ def send_message(request):
             except:
                 pass
 
-            drop_message(msg)
-
             return JsonResponse(
-                {"success": True, "message": msg.toJSON()},
+                {
+                    "success": True, 
+                    "message": msg.toJSON(),
+                    "recipients": get_recipients(msg),
+                },
+                status=200,
             )
         except Exception as e:
             try:
@@ -508,5 +511,10 @@ def get_pending_messages(request):
         )
 
 
-def drop_message(msg):
-    pass
+def get_recipients(msg):
+    try:
+        couple = Couple.objects.get(id=msg.room.id)
+        return [couple.user1.id, couple.user2.id]
+    except:
+        group = Group.objects.get(id=msg.room.id)
+        return [member.id for member in group.members.all()]

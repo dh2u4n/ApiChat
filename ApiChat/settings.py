@@ -28,7 +28,7 @@ DEBUG = True
 
 HOST_URL = ""
 
-ALLOWED_HOSTS = ["dhqit.ddns.net", "localhost", "192.168.1.50"]
+ALLOWED_HOSTS = ["dhqit.ddns.net", "localhost", "192.168.1.50", "192.168.1.215"]
 
 
 # Application definition
