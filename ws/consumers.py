@@ -21,16 +21,19 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             self.uid = str(user.id)
             await self.channel_layer.group_add(self.uid, self.channel_name)
 
-            await self.channel_layer.group_send(
-                self.uid, {"type": "notification_message", "message": "Hello"}
-            )
+            # await self.channel_layer.group_send(
+            #     self.uid, {"type": "notification_message", "message": "Hello"}
+            # )
 
             await self.accept()
         except:
             await self.close()
 
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.uid, self.channel_name)
+        try:
+            await self.channel_layer.group_discard(self.uid, self.channel_name)
+        except:
+            pass
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)

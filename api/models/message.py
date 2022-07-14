@@ -54,7 +54,7 @@ class Message(models.Model):
 
 
 class FileMessage(models.Model):
-    file = models.FileField(upload_to="m/files/")
+    file = models.FileField(upload_to="m/")
     message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name="files")
 
     class Meta:

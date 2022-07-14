@@ -46,10 +46,7 @@ def register(request):
                 },
                 status=400,
             )
-        except Exception as e:
-            print("#######################")
-            print(e)
-            print("#######################")
+        except:
             return JsonResponse(
                 {
                     "success": False,

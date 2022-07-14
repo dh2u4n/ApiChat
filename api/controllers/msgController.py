@@ -222,12 +222,11 @@ def send_message(request):
                 },
                 status=200,
             )
-        except Exception as e:
+        except:
             try:
                 new_couple.delete()
             except:
                 pass
-            print(e)
             return JsonResponse(
                 {
                     "success": False,
@@ -381,9 +380,6 @@ def get_messages(request):
                 status=400,
             )
 
-        # print(room_id)
-        # print(user)
-
         try:  # room exists
             room = Room.objects.get(id=room_id)
         except:  # room does not exist
@@ -441,9 +437,20 @@ def get_messages(request):
         messages = Message.objects.filter(room=room).order_by("created_at")
         MESSAGES_PER_PAGE = 20
         num_all_messages = len(messages)
+
+        if page * MESSAGES_PER_PAGE > num_all_messages:
+            return JsonResponse(
+                {
+                    "success": False,
+                    "message": "I have given you all the messages that I have. Now let me sleep. OK?",
+                    "error": 400,
+                },
+                status=400,
+            )
+
         # page begins at 0
         begin_index = max(0, num_all_messages - MESSAGES_PER_PAGE * (page + 1))
-        end_index = min(num_all_messages, begin_index + MESSAGES_PER_PAGE)
+        end_index = num_all_messages - MESSAGES_PER_PAGE * page
         messages = messages[begin_index:end_index]
 
         return JsonResponse(
