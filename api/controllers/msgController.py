@@ -216,7 +216,7 @@ def send_message(request):
 
             return JsonResponse(
                 {
-                    "success": True, 
+                    "success": True,
                     "message": msg.toJSON(),
                     "recipients": get_recipients(msg),
                 },
@@ -296,8 +296,7 @@ def react_to_message(request):
             else:
                 r.reaction = reaction
                 r.save()
-        except Exception as e:  # reaction has not been created
-            print(e)
+        except:  # reaction has not been created
             try:  # reaction has not been created
                 couple = Couple.objects.get(id=msg.room.id)
                 list_users = [couple.user1, couple.user2]
@@ -313,6 +312,16 @@ def react_to_message(request):
                         },
                         status=400,
                     )
+
+            if user not in list_users:
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "message": "You are not a member of this room",
+                        "error": 400,
+                    },
+                    status=400,
+                )
             if reaction:  # reaction is not None
                 msg.reactions.create(user=user, reaction=reaction)
             else:  # can't create a reaction with None
