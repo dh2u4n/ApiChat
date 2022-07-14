@@ -227,9 +227,19 @@ def group_settings(request):
                 )
 
         group.name = DATA["name"] if "name" in DATA else group.name
-        avatar = FILES["avatar"] if "avatar" in FILES else group.avatar
-        avatar.name = "g_" + str(group.id) + "." + avatar.name.split(".")[-1]
-        group.avatar = avatar
+
+        if "avatar" in FILES:
+            avatar = FILES["avatar"]
+            if avatar.content_type not in ["image/jpeg", "image/jpg", "image/png"]:
+                return JsonResponse(
+                    {
+                        "success": False,
+                        "message": "Avatar must be a jpeg, jpg or png",
+                    },
+                    status=400,
+                )
+            avatar.name = "g_" + str(group.id) + "." + avatar.name.split(".")[-1]
+            group.avatar = avatar
 
         group.save()
 
