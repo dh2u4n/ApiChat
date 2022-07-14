@@ -301,7 +301,7 @@ def react_to_message(request):
                 list_users = [couple.user1, couple.user2]
             except:
                 try:
-                    list_users = Group.objects.get(id=msg.room.id).members
+                    list_users = Group.objects.get(id=msg.room.id).members.all()
                 except:
                     return JsonResponse(
                         {
