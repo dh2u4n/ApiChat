@@ -132,8 +132,8 @@ def login(request):
             )
 
         try:
-            username = DATA["username"]
-            password = DATA["password"]
+            username = DATA["username"].strip().lower()
+            password = DATA["password"].strip()
         except KeyError:
             return JsonResponse(
                 {

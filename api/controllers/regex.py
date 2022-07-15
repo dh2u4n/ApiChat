@@ -29,14 +29,13 @@ class PasswordInvalid(Exception):
 def regex_username(username):
     # min 5 characters
     if re.match(r"^[a-zA-Z0-9_]{3,}$", username):
-        return username
-        return username
+        return username.lower()
     raise UsernameInvalid
 
 
 def regex_email(email):
     if re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email):
-        return email
+        return email.lower()
     raise EmailInvalid
 
 
