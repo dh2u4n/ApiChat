@@ -46,7 +46,7 @@ def register(request):
                 },
                 status=400,
             )
-        except:
+        except Exception as e:
             return JsonResponse(
                 {
                     "success": False,
@@ -390,6 +390,14 @@ def set_avatar(request):
             },
             status=400,
         )
+        
+        
+def to_number(q):
+    try:
+        return int(q)
+    except:
+        return -1
+
 
 
 def search_user(request):
@@ -423,12 +431,15 @@ def search_user(request):
             )
 
         users = User.objects.filter(
-            Q(is_active=True) & Q(username__icontains=q)
-            | Q(email__icontains=q)
-            | Q(phone__icontains=q)
-            | Q(first_name__icontains=q)
-            | Q(last_name__icontains=q)
-            | Q(id__icontains=q)
+            Q(is_active=True) & 
+            (
+                Q(username=q)
+                | Q(email=q)
+                | Q(phone=q)
+                | Q(first_name__icontains=q)
+                | Q(last_name__icontains=q)
+                | Q(id=to_number(q))
+            )
         )
         users = users.exclude(id=user.id)
 
