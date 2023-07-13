@@ -290,7 +290,7 @@ def react_to_message(request):
 
         try:  # reaction has already been created
             r = msg.reactions.get(user=user)
-            if reaction == None:
+            if reaction == None or reaction == r.reaction:
                 r.delete()
             else:
                 r.reaction = reaction

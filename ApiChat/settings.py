@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,14 +24,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-^82e_32j*%99s4^$r26j86ey2zlxcug4ehdvz2ouufys3po02l"
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 HOST_URL = ""
 
-ALLOWED_HOSTS = ["dhqit.ddns.net", "localhost", "192.168.1.50", "192.168.1.215"]
+ALLOWED_HOSTS = ["api.chat.q2k.dev", "chat.q2k.dev", "*"]
 
 
 # Application definition
@@ -51,7 +54,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    #"django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -62,13 +65,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 if not CORS_ALLOW_ALL_ORIGINS:
     CORS_ALLOWED_ORIGINS = [
-        "http://localhost:80",
-        "http://localhost:8000",
+        "https://api.chat.q2k.dev",
     ]
 
 CORS_ALLOW_HEADERS = [
     "*",
 ]
+
+CSRF_TRUSTED_ORIGINS = ["https://api.chat.q2k.dev"]
 
 ROOT_URLCONF = "ApiChat.urls"
 
@@ -88,14 +92,19 @@ TEMPLATES = [
     },
 ]
 
+# REDIS
+REDIS_HOST = os.environ["REDIS_HOST"]
+REDIS_PORT = os.environ["REDIS_PORT"]
+REDIS_DB = os.environ["REDIS_DB"]
+REDIS_PASS = os.environ["REDIS_PASS"]
+
 WSGI_APPLICATION = "ApiChat.wsgi.application"
 ASGI_APPLICATION = "ApiChat.asgi.application"
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            # "hosts": [("127.0.0.1", 6379)],
-            "hosts": [("13.250.106.81", 6379)],
+            "hosts": [(f"redis://:{REDIS_PASS}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}")],
         },
     },
 }
@@ -105,33 +114,18 @@ CHANNEL_LAYERS = {
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
     "default": {
         "ENGINE": "django.db.backends.mysql",
         "OPTIONS": {
             "charset": "utf8mb4",
             "use_unicode": True,
         },
-        "NAME": "apichat",
-        "USER": "root",
-        "PASSWORD": "admin",
-        "HOST": "localhost",
-        "PORT": "3306",
+        "NAME": os.environ["DB_NAME"],
+        "USER": os.environ["DB_USER"],
+        "PASSWORD": os.environ["DB_PASS"],
+        "HOST": os.environ["DB_HOST"],
+        "PORT": os.environ["DB_PORT"],
     },
-    # "default": {
-    #     "ENGINE": "django.db.backends.mysql",
-    #     "OPTIONS": {
-    #         "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
-    #     },
-    #     "NAME": "apichat$default",
-    #     "USER": "apichat",
-    #     "PASSWORD": "admin123@",
-    #     "HOST": "apichat.mysql.pythonanywhere-services.com",
-    #     "PORT": "3306",
-    # },
 }
 
 
